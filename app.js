@@ -197,7 +197,8 @@
         "<li><div>Przewiń listę i wybierz <b>„Do ekranu początkowego”</b> <span class=\"ico\">" + ADD_ICO + "</span>.</div></li>" +
         "<li><div>Stuknij <b>Dodaj</b>, a potem uruchom <b>STQC Alarm</b> z ekranu początkowego.</div></li>" +
         "<li><div>W aplikacji wpisz <b>kod drużyny</b> i imię, a potem stuknij <b>Włącz powiadomienia</b>.</div></li>" +
-        "</ol>" + codeBox() + "</div>" +
+        "</ol>" + '<p class="hint">Musi to być <b>Safari</b>. Jeśli strona otworzyła się w Telegramie lub Messengerze, ' +
+        "stuknij ⋯ albo ikonę kompasu → <b>„Otwórz w Safari”</b>.</p>" + codeBox() + "</div>" +
         (IOS_NOT_SAFARI ? '<div class="note">⚠ Ta strona jest otwarta poza Safari. Otwórz ją w <b>Safari</b> ' +
           "(w Telegramie: ⋯ → „Otwórz w Safari”), wtedy pojawi się „Do ekranu początkowego”.</div>" : "") +
         '<div class="note blue">Wymagany iOS 16.4 lub nowszy (Ustawienia → Ogólne → Informacje). ' +
@@ -859,7 +860,7 @@
       if (a && fresh && !a.my && !rung[a.id] && live && !a.push) ring(a.id); // a.push: już zaalarmowało powiadomienie
       else if (a && fresh && !a.my && !shown && !dismissed[a.id] && !isClosed(a) &&
         document.visibilityState === "visible") openAlarm(a.id); // np. po otwarciu z powiadomienia
-      if (a && !a.acked && age < 3600) sendAck(a.id);
+      if (a && !a.acked && age < 3600 && !isClosed(a)) sendAck(a.id); // „odebrałem alarm” – tylko trwająca zbiórka
       renderAll();
     } else if (t === "rc") {
       await STQC.putField(o.id, "rc", o);
