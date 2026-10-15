@@ -2,7 +2,7 @@
 "use strict";
 importScripts("common.js");
 
-var CACHE = "stqc-alarm-" + STQC.VERSION + "-3";
+var CACHE = "stqc-alarm-" + STQC.VERSION;
 var FILES = ["./", "index.html", "app.css", "app.js", "common.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/apple-touch-icon.png", "icons/badge-72.png"];
 

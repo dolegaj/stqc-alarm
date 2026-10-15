@@ -1028,10 +1028,11 @@
     pushState.checked = true;
     try {
       if (Notification.permission === "granted" && cfg.vapid) {
+        var confirm = !cfg.pushOkAt; // jeszcze nie przyszło żadne powiadomienie – niech dekoder wyśle potwierdzenie
         if (!sub || (cfg.pushVapid && cfg.pushVapid !== cfg.vapid) || !sameKey(sub.options && sub.options.applicationServerKey, cfg.vapid)) {
-          await subscribePush(false);
+          await subscribePush(confirm);
         } else if (cfg.pushEndpoint !== sub.endpoint || Date.now() - (cfg.pushSentAt || 0) > 24 * 3600e3) {
-          await sendSub(sub, false);
+          await sendSub(sub, confirm);
         }
       }
     } catch (e) { /* użytkownik włączy przyciskiem */ }

@@ -3,7 +3,7 @@
  * i aplikacja na Androida (Crypto.java). Sprawdzane testem tests/test_web.py. */
 "use strict";
 var STQC = (function () {
-  var VERSION = "1.0.0";
+  var VERSION = "1.0.1";
   var APP = "web-" + VERSION;
   var ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
   var PREFIX = "S1.";
