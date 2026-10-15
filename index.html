@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>STQC Alarm</title>
+  <meta name="description" content="Alarmy jednostki OSP na telefonie: Jadę / 5 min / 10 min / Nie jadę i wspólna lista, kto jedzie.">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="color-scheme" content="dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="STQC Alarm">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="no-referrer">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <main id="main" aria-live="polite"></main>
+  <section id="alarm" hidden role="alertdialog" aria-label="Alarm"></section>
+  <div id="toast" role="status"></div>
+  <dialog id="dlg"><h3 id="dlgT"></h3><div id="dlgB"></div><div class="btns" id="dlgBtns"></div></dialog>
+  <noscript><p style="padding:20px">STQC Alarm wymaga włączonej obsługi JavaScript.</p></noscript>
+  <script src="common.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

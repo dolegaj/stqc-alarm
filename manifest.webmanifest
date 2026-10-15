@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "STQC Alarm",
+  "short_name": "STQC Alarm",
+  "description": "Alarmy jednostki OSP: Jadę / 5 min / 10 min / Nie jadę i wspólna lista, kto jedzie.",
+  "lang": "pl",
+  "dir": "ltr",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d10",
+  "theme_color": "#0b0d10",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+    {"src": "icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"}
+  ]
+}
