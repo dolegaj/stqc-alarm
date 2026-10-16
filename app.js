@@ -384,6 +384,7 @@
       '<div class="t">' + esc(a.title || "Alarm") + "</div>" +
       '<div class="muted" style="font-size:14px">godz. ' + hhmm(ts) + " · " + ago(ts) + "<br>" +
       (my ? "Twoja odpowiedź: " + esc(STQC.label(my)) : "Nie odpowiedziałeś") +
+      (a.inc && a.inc.loc ? "<br>📍 <b>" + esc(a.inc.loc) + "</b>" + (a.inc.ty ? " · " + esc(a.inc.ty) : "") : "") +
       (rc ? "<br>Zbiórka: ✅ " + len(rc.go) + " · ⏱ " + len(rc.eta) + " · ❌ " + len(rc.no) : "") + "</div></div>");
   }
   function len(x) { return Array.isArray(x) ? x.length : 0; }
@@ -433,7 +434,8 @@
     el.hidden = false;
     setHTML(el, "<h2>Historia alarmów</h2>" + alarms.slice(0, 12).map(function (a) {
       return '<div class="hist" data-act="openAlarm" data-id="' + esc(a.id) + '">' + ddmm(alarmTs(a)) + "  " + (a.test ? "🧪 " : "") +
-        esc(a.title || "Alarm") + (a.my ? "  —  " + esc(STQC.label(a.my)) : "") + "</div>";
+        esc(a.title || "Alarm") + (a.inc && a.inc.loc ? "  ·  📍 " + esc(a.inc.loc) : "") +
+        (a.my ? "  —  " + esc(STQC.label(a.my)) : "") + "</div>";
     }).join(""));
   }
 
@@ -536,11 +538,11 @@
     }
     var a = find(shown);
     if (!alarmEl._built) {
-      alarmEl.innerHTML = '<div class="in"><div id="aHead"></div><div id="aAns"></div><div id="aSil"></div><div id="aRc"></div>' +
+      alarmEl.innerHTML = '<div class="in"><div id="aHead"></div><div id="aAns"></div><div id="aSil"></div><div id="aInc"></div><div id="aRc"></div>' +
         '<div id="aTx"></div><button class="btn sec" data-act="closeAlarm" style="margin-top:18px;background:#ffffff26;' +
         'min-height:46px">Zamknij</button></div>';
       alarmEl._built = true;
-      ["aHead", "aAns", "aSil", "aRc", "aTx"].forEach(function (k) { alarmEl[k] = $("#" + k, alarmEl); });
+      ["aHead", "aAns", "aSil", "aInc", "aRc", "aTx"].forEach(function (k) { alarmEl[k] = $("#" + k, alarmEl); });
     }
     alarmEl.hidden = false;
     document.documentElement.style.overflow = "hidden";
@@ -549,6 +551,7 @@
         '<div class="a-meta">Czekam na połączenie z serwerem</div>');
       setHTML(alarmEl.aAns, "");
       setHTML(alarmEl.aSil, "");
+      setHTML(alarmEl.aInc, "");
       setHTML(alarmEl.aRc, "");
       setHTML(alarmEl.aTx, "");
       return;
@@ -577,8 +580,34 @@
     setHTML(alarmEl.aSil, isRinging ? '<button class="btn sec" data-act="silence" style="margin-top:14px;background:#ffffff40">' +
       "🔇&nbsp; Wycisz syrenę</button>" + (cfg.sound !== "none" && audioLocked() ?
       '<div class="tapsound" data-act="sound">🔊 Dotknij, aby włączyć syrenę</div>' : "") : "");
+    setHTML(alarmEl.aInc, incHtml(a.inc));
     setHTML(alarmEl.aRc, rcHtml(a));
     setHTML(alarmEl.aTx, a.tx ? '<div class="tx">📝 Korespondencja (transkrypcja AI – może zawierać błędy):\n' + esc(a.tx) + "</div>" : "");
+  }
+
+  /** Karta zdarzenia (AI dekodera z korespondencji): rodzaj, adres, nawigacja. */
+  function navLinks(i) {
+    if (i.lat == null || i.lon == null) return null;
+    var q = Number(i.lat).toFixed(6) + "," + Number(i.lon).toFixed(6);
+    return { apple: "https://maps.apple.com/?daddr=" + q + "&dirflg=d",
+      google: "https://www.google.com/maps/dir/?api=1&destination=" + q + "&travelmode=driving",
+      waze: "https://waze.com/ul?ll=" + q + "&navigate=yes" };
+  }
+  function incHtml(i) {
+    if (!i || !(i.loc || i.ty)) return "";
+    var n = navLinks(i), main = n ? (IOS ? n.apple : n.google) : "";
+    var det = Array.isArray(i.det) ? i.det : [];
+    return '<div class="inc">' +
+      (i.ty ? '<div class="inc-ty">' + esc((i.ic ? i.ic + " " : "") + i.ty) + "</div>" : "") +
+      (i.loc ? '<div class="inc-loc">📍 ' + esc(i.loc) + "</div>" : "") +
+      (i.stl || i.crew ? '<div class="inc-st">' + esc(i.stl || "") + (i.crew ? " · skład " + esc(i.crew) : "") + "</div>" : "") +
+      (det.length ? '<div class="inc-det">' + det.map(function (d) { return "• " + esc(d); }).join("<br>") + "</div>" : "") +
+      (n ? '<a class="btn navb" href="' + esc(main) + '" target="_blank" rel="noopener">🧭&nbsp; NAWIGUJ</a>' +
+        '<div class="row inc-alt"><a class="btn sec" href="' + esc(IOS ? n.google : n.apple) + '" target="_blank" rel="noopener">' +
+        (IOS ? "Google Maps" : "Mapy Apple") + '</a><a class="btn sec" href="' + esc(n.waze) + '" target="_blank" rel="noopener">Waze</a></div>'
+        : (i.loc ? '<div class="inc-q">Szukam adresu na mapie…</div>' : "")) +
+      (i.q ? '<div class="inc-q">„' + esc(i.q) + "”</div>" : "") +
+      '<div class="inc-ai">🧠 AI dekodera z korespondencji – może się mylić</div></div>';
   }
 
   async function answer(s, e) {
@@ -868,6 +897,12 @@
       renderAll();
     } else if (t === "tx") {
       await STQC.putField(o.id, "tx", String(o.text || ""));
+      await reload();
+      renderAll();
+    } else if (t === "inc") {
+      var cur = find(o.id);
+      if (cur && cur.inc && (cur.inc.upd || 0) > (o.upd || 0)) return; // starsza wersja karty (nadrabianie)
+      await STQC.putField(o.id, "inc", o);
       await reload();
       renderAll();
     } else if (t === "welcome") {

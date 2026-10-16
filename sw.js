@@ -77,8 +77,15 @@ self.addEventListener("push", function (e) {
   if (alarm && maxActions >= 2 && d.id) { // Android/komputer: odpowiedź prosto z powiadomienia (iPhone tego nie ma)
     opts.actions = [{ action: "go", title: "✅ Jadę" }, { action: "no", title: "❌ Nie jadę" }];
   }
+  if (d.t === "inc") { // karta zdarzenia: adres i rodzaj (AI dekodera) – zwykłe powiadomienie, bez syreny
+    opts.requireInteraction = false;
+    opts.vibrate = [250, 120, 250];
+  }
   var jobs = [self.registration.showNotification(d.title || "STQC Alarm", opts)];
   if (alarm && d.a && d.a.id) jobs.push(storeAlarm(d.a));
+  if (d.t === "inc" && d.a && d.a.id) {
+    jobs.push(STQC.alarmUpdate(d.a.id, function (x) { if (!x.inc || (x.inc.upd || 0) <= (d.a.upd || 0)) x.inc = d.a; }));
+  }
   if (alarm && self.navigator.setAppBadge) jobs.push(self.navigator.setAppBadge(1));
   if (d.tag === "stqc-ok" || d.t === "test") jobs.push(STQC.patchCfg({ pushOkAt: Date.now() }));
   e.waitUntil(Promise.all(jobs.map(function (p) { return Promise.resolve(p).catch(function () {}); }))
