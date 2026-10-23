@@ -26,7 +26,9 @@ dlatego karta pokazuje też cytat z korespondencji.
 
 **Aktualizacja na Androidzie (od 1.2):** w aplikacji *Aktualizacja aplikacji → Zaktualizuj* — pobiera nową wersję,
 sprawdza sumę kontrolną i certyfikat (ten sam co zainstalowana aplikacja) i otwiera systemowe okno instalacji.
-Za pierwszym razem Android zapyta o zgodę na instalowanie z tej aplikacji. Wersję 1.1 aktualizujesz raz ręcznie:
+Za pierwszym razem Android zapyta o zgodę na instalowanie z tej aplikacji — włącz *„Zezwalaj z tego źródła”*,
+wróć przyciskiem Wstecz, a aktualizacja ruszy sama. Po instalacji nasłuch alarmów wraca sam (powiadomienie
+*„STQC Alarm … zainstalowana”*). Wersję 1.1 aktualizujesz raz ręcznie:
 pobierz nowy plik APK i zainstaluj na starej aplikacji — kod drużyny i historia zostają.
 
 ## Aktualizacje programu STQC Decoder
