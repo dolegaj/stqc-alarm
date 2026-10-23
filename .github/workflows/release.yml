@@ -1,7 +1,7 @@
 name: Wydanie aktualizacji STQC Decoder
 
 # Gałąź „upload-decoder-<wersja>” (tools/release_update.py w repozytorium programu) zawiera paczkę aktualizacji:
-# TAG, TITLE, NOTES.md i assets/*.stqc (instalator zaszyfrowany, podpisany manifestem). Workflow robi z niej wydanie
+# TAG, TITLE, NOTES.md i assets/*.stqc (instalator zaszyfrowany, podpisany manifestem; duży plik w częściach .partNNN). Workflow robi z niej wydanie
 # GitHub, sprawdza, czy plik jest do pobrania pod publicznym adresem, i usuwa gałąź (w historii main nie ma binariów).
 # Manifest update.json trafia na main osobno – dopiero, gdy wydanie działa (programy widzą wtedy aktualizację).
 on:
@@ -31,6 +31,13 @@ jobs:
           set -euo pipefail
           TAG="$(tr -d '[:space:]' < TAG)"
           TITLE="$(head -1 TITLE)"
+          # duże pliki przychodzą w częściach (<nazwa>.part001, .part002…) – sklejamy przed wydaniem
+          for p in assets/*.part001; do
+            [ -e "$p" ] || continue
+            base="${p%.part001}"
+            cat "$base".part[0-9][0-9][0-9] > "$base"
+            rm -f "$base".part[0-9][0-9][0-9]
+          done
           ls -la assets
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --title "$TITLE" --notes-file NOTES.md --latest=false --target main
