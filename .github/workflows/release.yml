@@ -1,0 +1,54 @@
+name: Wydanie aktualizacji STQC Decoder
+
+# Gałąź „upload-decoder-<wersja>” (tools/release_update.py w repozytorium programu) zawiera paczkę aktualizacji:
+# TAG, TITLE, NOTES.md i assets/*.stqc (instalator zaszyfrowany, podpisany manifestem). Workflow robi z niej wydanie
+# GitHub, sprawdza, czy plik jest do pobrania pod publicznym adresem, i usuwa gałąź (w historii main nie ma binariów).
+# Manifest update.json trafia na main osobno – dopiero, gdy wydanie działa (programy widzą wtedy aktualizację).
+on:
+  push:
+    branches: ["upload-*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - name: Wydanie z paczką aktualizacji
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="$(tr -d '[:space:]' < TAG)"
+          TITLE="$(head -1 TITLE)"
+          ls -la assets
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "$TITLE" --notes-file NOTES.md --latest=false --target main
+          fi
+          for f in assets/*; do
+            gh release upload "$TAG" "$f" --clobber
+          done
+          for f in assets/*; do
+            n="$(basename "$f")"
+            for i in 1 2 3 4 5 6; do
+              if curl -sSfL -o /tmp/chk "https://github.com/${GITHUB_REPOSITORY}/releases/download/$TAG/$n"; then break; fi
+              sleep 10
+            done
+            cmp /tmp/chk "$f"
+            echo "✓ do pobrania: https://github.com/${GITHUB_REPOSITORY}/releases/download/$TAG/$n ($(stat -c %s "$f") B)"
+          done
+      - name: Usunięcie gałęzi z paczką
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${GITHUB_REF_NAME}"

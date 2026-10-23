@@ -24,7 +24,16 @@ Gdy po alarmie stanowisko poda przez radio miejsce i rodzaj zdarzenia, dekoder (
 kartę: **🔥 rodzaj · 📍 adres · NAWIGUJ** (Google Maps / Mapy Apple / Waze). To wynik AI — może się mylić,
 dlatego karta pokazuje też cytat z korespondencji.
 
-**Aktualizacja na Androidzie:** pobierz nowy plik APK i zainstaluj na starej aplikacji — kod drużyny i historia zostają.
+**Aktualizacja na Androidzie (od 1.2):** w aplikacji *Aktualizacja aplikacji → Zaktualizuj* — pobiera nową wersję,
+sprawdza sumę kontrolną i certyfikat (ten sam co zainstalowana aplikacja) i otwiera systemowe okno instalacji.
+Za pierwszym razem Android zapyta o zgodę na instalowanie z tej aplikacji. Wersję 1.1 aktualizujesz raz ręcznie:
+pobierz nowy plik APK i zainstaluj na starej aplikacji — kod drużyny i historia zostają.
+
+## Aktualizacje programu STQC Decoder
+
+Program na komputerze sprawdza `update.json` z tego repozytorium (podpisany cyfrowo przez autora programu) i z
+*Ustawień → Aktualizacja programu* sam instaluje nowszą wersję. Paczki instalatora w *Releases* są zaszyfrowane —
+używa ich tylko zainstalowany STQC Decoder.
 
 ## Jak to działa
 
